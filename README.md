@@ -11,11 +11,11 @@ Basically the first thing I do is separate the input into manageable pieces of i
 the architecture is quite functional: the main.py file contains the calculate method, which is the important one, and two more methods that are auxiliary, also in that file is the wages class that defines the prices and schedules. it is structured so that it can be run as a script or call the functions from another file if needed.
 then there are two more files: exceptions.py that saves the custom exceptions and tests.py that has the unit tests (a github action was created to run test in any push on master branch).
 
-## aproach and methodology
+## Aproach and methodology
 
 the main aproach was to wirte the tests first (simple ones and limit-cases) and trying to think the solution, then start coding. once the tests passed, I continued with commenting and tidying up the code.
 
-## run instructions
+## Run instructions
 ```
 python main.py data.txt
 ```
