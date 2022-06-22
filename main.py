@@ -1,5 +1,8 @@
 import os
 import sys
+
+from typing import List, Tuple
+
 from exceptions import DataError, DayOutboundError
 
 WAGES = {
@@ -39,7 +42,12 @@ WAGES = {
     ]
 }
 
-def load_file(file_path: str) -> list:
+
+def load_file(file_path: str) -> List[str]:
+    """
+    param file_path: Path to the file with the data to calculate
+    return: list of lines from the file
+    """
     if not os.path.exists(file_path):
         print("file not found")
         raise FileNotFoundError
@@ -49,19 +57,27 @@ def load_file(file_path: str) -> list:
 
 
 def hour_to_minutes(hour24: str) -> int:
+    """
+    param hour24: a string hour in format 'hh:mm'
+    return: amount of minutes from 00:00 to input hour
+    """
     try:
         hour, minutes = hour24.split(":")
         return (int(hour) * 60) + int(minutes)
     except ValueError:
-        raise DataError(input)
+        raise DataError(hour24)
 
 
-def calculate(input: str) -> str:
+def calculate(input_str: str) -> Tuple[str, int]:
+    """
+    param input_str: string specifying the schedule of one employee
+    return: tuple containing the employee name and the payment
+    """
     try:
-        employee, schedule = input.split("=")
+        employee, schedule = input_str.split("=")
         lapses = schedule.split(",")
     except ValueError:
-        raise DataError(input)
+        raise DataError(input_str)
 
     payment = 0
 
@@ -71,7 +87,7 @@ def calculate(input: str) -> str:
         try:
             start_time, end_time = time.split("-")
         except ValueError:
-            raise DataError(input)
+            raise DataError(input_str)
         start_in_minutes = hour_to_minutes(start_time)
         end_in_minutes = hour_to_minutes(end_time)
         if (end_in_minutes - start_in_minutes) < 0:
@@ -86,21 +102,27 @@ def calculate(input: str) -> str:
 
                 else:
                     worked_minutes = period["end"] - start_in_minutes
+                    # if the worked period go through the change of wage
+                    # the start is moved forward, so it enters the next loop.
                     start_in_minutes += worked_minutes
 
                 payment += worked_minutes / 60 * period["value"]
 
-    output = (f"The amount to pay {employee} is: {int(payment)} USD")
-    return output
+    return employee, int(payment)
 
 
 if __name__ == '__main__':
 
-    path = sys.argv[1]
+
     try:
+        path = sys.argv[1]
         lines = load_file(path)
     except FileNotFoundError as e:
         exit()
+    except IndexError:
+        print("No file path was given")
+        exit()
 
     for line in lines:
-        print(calculate(line))
+        employee, payment = calculate(line)
+        print(f"The amount to pay {employee} is: {payment} USD")
