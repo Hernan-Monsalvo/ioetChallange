@@ -5,8 +5,8 @@ from typing import List, Tuple
 
 from exceptions import DataError, DayOutboundError
 
-WAGES = {
-    "normal": [
+class Wages():
+    normal = [
         {
             "initial": 1,
             "end": 9 * 60,
@@ -22,8 +22,8 @@ WAGES = {
             "end": 24 * 60,
             "value": 20
         }
-    ],
-    "weekend": [
+    ]
+    weekend = [
         {
             "initial": 1,
             "end": 9 * 60,
@@ -40,8 +40,6 @@ WAGES = {
             "value": 25
         }
     ]
-}
-
 
 def load_file(file_path: str) -> List[str]:
     """
@@ -93,7 +91,7 @@ def calculate(input_str: str) -> Tuple[str, int]:
         if (end_in_minutes - start_in_minutes) < 0:
             raise DayOutboundError(lapse)
 
-        wages = WAGES["weekend"] if day in ["SA", "SU"] else WAGES["normal"]
+        wages = Wages.weekend if day in ["SA", "SU"] else Wages.normal
 
         for period in wages:
             if period["initial"] <= start_in_minutes <= period["end"]:
